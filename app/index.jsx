@@ -1,9 +1,10 @@
-import { Image, StyleSheet, Text } from 'react-native'
+import { Image, StyleSheet } from 'react-native'
 import { Link } from 'expo-router'
 import Icon from "../assets/favicon.png"
-import ThemedView from '../components/ThemedView'
-import Spacer from '../components/Spacer'
-import ThemedText from '../components/ThemedText'
+
+import Spacer from '../components/layout/Spacer'
+import ThemedView from '../components/layout/ThemedView'
+import ThemedText from '../components/ui/ThemedText'
 
 const Home = () => {
   return (
@@ -14,8 +15,24 @@ const Home = () => {
 
       <Spacer height={15} />
 
-      <Link href="/hobbies">
+      <Link href="/Hobbies">
         <ThemedText>Hobbies</ThemedText>
+      </Link>
+
+      <Spacer height={15} />
+
+      <Link href="/Login">
+        <ThemedText>Login</ThemedText>
+      </Link>
+
+      <Spacer height={15} />
+
+      <Link href="/Profile">
+        <ThemedText>Profile</ThemedText>
+      </Link>
+      <Spacer height={15} />
+      <Link href="/Home">
+        <ThemedText>Feed</ThemedText>
       </Link>
     </ThemedView>
   )

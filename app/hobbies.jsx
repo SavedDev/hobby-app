@@ -1,8 +1,9 @@
 import { Link } from 'expo-router'
-import { SectionList, StyleSheet } from 'react-native'
-import ThemedView from '../components/ThemedView'
-import ThemedText from '../components/ThemedText'
-import Spacer from '../components/Spacer'
+import { StyleSheet } from 'react-native'
+
+import Spacer from '../components/layout/Spacer'
+import ThemedView from '../components/layout/ThemedView'
+import ThemedText from '../components/ui/ThemedText'
 
 const Hobbies = () => {
   return (
