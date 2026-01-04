@@ -12,7 +12,7 @@ const Home = () => {
   const router = useRouter()
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView safe style={styles.container}>
       <ThemedText title>Home</ThemedText>
     </ThemedView>
   )

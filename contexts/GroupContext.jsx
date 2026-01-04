@@ -95,15 +95,20 @@ export function GroupProvider({ children }) {
     }
   }
 
-  async function deleteGroup(groupId) {
+  async function deleteGroup(groupIdToDelete, updatedUserGroupIds) {
     try {
       await tablesDB.deleteRow({
         databaseId,
         tableId: groupTable,
-        rowId: groupId
+        rowId: groupIdToDelete
       })
     } catch (error) {
       console.error('Failed to delete group:', error)
+    }
+    try {
+      await toggleGroupMembership(updatedUserGroupIds)
+    } catch (error) {
+      console.error('Failed to update user groups:', error)
     }
   }
 
@@ -128,6 +133,15 @@ export function GroupProvider({ children }) {
             setGroups((prevGroups) =>
               prevGroups.filter((group) => group.$id !== payload.$id)
             )
+            setUser((prevUser) => {
+              return {
+                ...prevUser,
+                joinedHobbyGroups: prevUser.joinedHobbyGroups.filter(
+                  (groupId) => groupId !== payload.$id
+                ),
+              }
+            })
+            console.log(user.joinedHobbyGroups.length)
           }
         }
       )
@@ -153,7 +167,6 @@ export function GroupProvider({ children }) {
       if (unsubUser) unsubUser()
     }
   }, [user])
-
 
   return (
     <GroupContext.Provider value={{ groups, fetchGroups, fetchGroupById, createNewGroup, updateGroup, toggleGroupMembership, deleteGroup }}>

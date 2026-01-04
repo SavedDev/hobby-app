@@ -1,4 +1,4 @@
-import { Modal, View, useColorScheme } from 'react-native'
+import { Modal, View, useColorScheme, StyleSheet } from 'react-native'
 import { use, useEffect, useState } from 'react'
 
 import { Colors } from '../../constants/colors'
@@ -44,7 +44,7 @@ const ThemedModal = ({ style, buttonTitle, closeModal, setCloseModal, children }
         animationType="slide"
         presentationStyle='pageSheet'
       >
-        <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ThemedView style={styles.container}>
           <ThemedText>{children}</ThemedText>
           <ThemedButton title="Close Modal" onPress={handleCloseModal} textStyle={{ color: '#fff' }} />
         </ThemedView>
@@ -55,6 +55,10 @@ const ThemedModal = ({ style, buttonTitle, closeModal, setCloseModal, children }
 
 export default ThemedModal
 
-// const styles = StyleSheet.create({
-
-// })
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    paddingTop: 30
+  }
+})

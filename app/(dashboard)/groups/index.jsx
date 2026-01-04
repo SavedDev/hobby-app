@@ -17,70 +17,76 @@ const Groups = () => {
 
   const { groups } = useGroups()
   const { user } = useUser()
+  // console.log(user.joinedHobbyGroups.length)
+
 
   const router = useRouter()
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedModal buttonTitle="Create New Group" closeModal={closeModal} setCloseModal={setCloseModal}>
-        <CreateGroup setCloseModal={setCloseModal} />
-      </ThemedModal>
+    <ThemedView safe style={styles.container}>
+      <ThemedView style={styles.header}>
+        <ThemedModal buttonTitle="Create New Group" closeModal={closeModal} setCloseModal={setCloseModal}>
+          <CreateGroup setCloseModal={setCloseModal} />
+        </ThemedModal>
+      </ThemedView>
 
-      {/* my groups */}
-      <ThemedText title>My Groups</ThemedText>
-      <FlatList
-        data={user.joinedHobbyGroups}
-        keyExtractor={(item) => item.$id}
-        contentContainerStyle={styles.list}
-        style={{ flexGrow: 0 }}
-        horizontal
-        renderItem={({ item }) => (
-          <Pressable
-            onPress={() =>
-              router.push({
-                pathname: `/groups/${item.$id}`,
-                params: { name: item.name }
-              })
-            }
-          >
-            <ThemedCard style={{ marginBottom: 10 }}>
-              <ThemedText title>{'Created by: ' + item.author?.username}</ThemedText>
-              <Spacer />
-              <ThemedText style={{ fontWeight: 'bold', fontSize: 20 }} title>{item.name}</ThemedText>
-              <ThemedText title>{item.description}</ThemedText>
-            </ThemedCard>
-          </Pressable>
-        )}
-      />
+      <ThemedView style={styles.content}>
+        {/* my groups */}
+        <ThemedText title>My Groups</ThemedText>
+        <FlatList
+          data={user.joinedHobbyGroups}
+          keyExtractor={(item) => item.$id}
+          contentContainerStyle={styles.list}
+          style={{ flexGrow: 0 }}
+          horizontal
+          renderItem={({ item }) => (
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: `/groups/${item.$id}`,
+                  params: { name: item.name }
+                })
+              }
+            >
+              <ThemedCard style={styles.card}>
+                <ThemedText title>{'Created by: ' + item.author?.username}</ThemedText>
+                <Spacer height={3} />
+                <ThemedText style={{ fontWeight: 'bold', fontSize: 16 }} title>{item.name}</ThemedText>
+                <ThemedText title>{item.description}</ThemedText>
+              </ThemedCard>
+            </Pressable>
+          )}
+        />
 
-      <Spacer height={20} />
+        <Spacer height={20} />
 
-      {/* all groups */}
-      <ThemedText title style={{ marginBottom: 10 }}>All Groups</ThemedText>
-      <FlatList
-        data={groups}
-        keyExtractor={(item) => item.$id}
-        contentContainerStyle={styles.list}
-        style={{ flexGrow: 0 }}
-        horizontal
-        renderItem={({ item }) => (
-          <Pressable
-            onPress={() =>
-              router.push({
-                pathname: `/groups/${item.$id}`,
-                params: { name: item.name }
-              })
-            }
-          >
-            <ThemedCard style={{ marginBottom: 10 }}>
-              <ThemedText title>{'Created by: ' + item.author?.username}</ThemedText>
-              <Spacer />
-              <ThemedText style={{ fontWeight: 'bold', fontSize: 20 }} title>{item.name}</ThemedText>
-              <ThemedText title>{item.description}</ThemedText>
-            </ThemedCard>
-          </Pressable>
-        )}
-      />
+        {/* all groups */}
+        <ThemedText title style={{ marginBottom: 10 }}>All Groups</ThemedText>
+        <FlatList
+          data={groups}
+          keyExtractor={(item) => item.$id}
+          contentContainerStyle={styles.list}
+          style={{ flexGrow: 0 }}
+          horizontal
+          renderItem={({ item }) => (
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: `/groups/${item.$id}`,
+                  params: { name: item.name }
+                })
+              }
+            >
+              <ThemedCard style={styles.card}>
+                <ThemedText title>{'Created by: ' + item.author?.username}</ThemedText>
+                <Spacer height={3} />
+                <ThemedText style={{ fontWeight: 'bold', fontSize: 16 }} title>{item.name}</ThemedText>
+                <ThemedText title>{item.description}</ThemedText>
+              </ThemedCard>
+            </Pressable>
+          )}
+        />
+      </ThemedView>
     </ThemedView>
   )
 }
@@ -92,7 +98,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingHorizontal: 10,
-    // justifyContent: 'center',
+  },
+  header: {
+    alignItems: 'flex-end',
+    width: '100%',
+    margin: '20'
   },
   list: {
     padding: 10,
@@ -100,4 +110,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 20,
   },
+  card: {
+    marginBottom: 10,
+    width: 220,
+    height: 150
+  }
 })

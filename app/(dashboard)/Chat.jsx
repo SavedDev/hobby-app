@@ -11,7 +11,7 @@ const Chat = () => {
   // const { logout, user } = useUser()
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView safe style={styles.container}>
       <ThemedText title>Chat</ThemedText>
     </ThemedView>
   )

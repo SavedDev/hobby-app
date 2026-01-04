@@ -12,7 +12,7 @@ const Profile = () => {
   const { logout, deleteAccount, user } = useUser()
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView safe style={styles.container}>
       <ThemedText title>Profile</ThemedText>
 
       <Spacer height={20} />

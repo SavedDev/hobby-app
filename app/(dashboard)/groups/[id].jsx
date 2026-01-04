@@ -18,6 +18,7 @@ const GroupDetails = () => {
 
   const [existingGroupIds, setExistingGroupIds] = useState([])
   const [isMember, setIsMember] = useState(false)
+  const [userIsAuthor, setUserIsAuthor] = useState(false)
 
   const { fetchGroupById, deleteGroup, toggleGroupMembership } = useGroups()
   const { user } = useUser()
@@ -26,15 +27,16 @@ const GroupDetails = () => {
   const navigation = useNavigation()
 
   const handleDeleteGroup = async () => {
-    await deleteGroup(id)
+    setHandleMembershipLoading(true)
+    await deleteGroup(id, getUpdatedGroupIds())
     setGroup(null)
+    setHandleMembershipLoading(false)
     navigation.goBack()
   }
 
   const handleJoinGroup = async () => {
     setHandleMembershipLoading(true)
-    const updatedGroupIds = getUpdatedGroupIds()
-    await toggleGroupMembership(updatedGroupIds)
+    await toggleGroupMembership(getUpdatedGroupIds())
     setHandleMembershipLoading(false)
     navigation.goBack()
   }
@@ -64,6 +66,8 @@ const GroupDetails = () => {
   useEffect(() => {
     setExistingGroupIds(user.joinedHobbyGroups?.map(g => g.$id || g) || [])
     setIsMember(existingGroupIds.includes(id))
+    setUserIsAuthor(group?.author === user.$id)
+
   }, [group])
 
   useEffect(() => {
@@ -84,7 +88,12 @@ const GroupDetails = () => {
     <ThemedView style={styles.container} safe={false}>
       <ThemedText title>{group?.name}</ThemedText>
 
-      <ThemedButton onPress={handleDeleteGroup} title='Delete Group' />
+      {userIsAuthor &&
+        <ThemedButton
+          onPress={handleDeleteGroup}
+          loading={handleMembershipLoading}
+          title='Delete Group' />
+      }
       <Spacer />
       <ThemedButton
         onPress={handleJoinGroup}
