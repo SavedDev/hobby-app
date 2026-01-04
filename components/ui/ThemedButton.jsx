@@ -3,14 +3,14 @@ import { Pressable, StyleSheet } from 'react-native'
 import { Colors } from '../../constants/colors'
 import ThemedText from './ThemedText'
 
-const ThemedButton = ({ style, title, textStyle, ...props }) => {
-
+const ThemedButton = ({ style, title, textStyle, loading = false, ...props }) => {
   return (
     <Pressable
-      style={({ pressed }) => [styles.button, pressed && styles.buttonPressed, style]}
+      style={({ pressed }) => [styles.button, pressed || loading && styles.buttonPressed, style]}
+      disabled={loading}
       {...props}
     >
-      <ThemedText style={[styles.text, textStyle]}>{title}</ThemedText>
+      <ThemedText style={[styles.text, textStyle]}>{loading ? 'Loading...' : title}</ThemedText>
     </Pressable>
   )
 }

@@ -2,14 +2,14 @@ import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { Keyboard, ScrollView, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 
-import Spacer from '../../components/layout/Spacer'
-import ThemedView from '../../components/layout/ThemedView'
-import ThemedText from '../../components/ui/ThemedText'
-import ThemedButton from '../../components/ui/ThemedButton'
-import ThemedTextInput from '../../components/forms/ThemedTextInput'
-import ThemedCheckbox from '../../components/forms/ThemedCheckbox'
+import Spacer from '../../../components/layout/Spacer'
+import ThemedView from '../../../components/layout/ThemedView'
+import ThemedText from '../../../components/ui/ThemedText'
+import ThemedButton from '../../../components/ui/ThemedButton'
+import ThemedTextInput from '../../../components/forms/ThemedTextInput'
+import ThemedCheckbox from '../../../components/forms/ThemedCheckbox'
 
-import { useGroups } from '../../hooks/useGroups'
+import { useGroups } from '../../../hooks/useGroups'
 
 const CreateGroup = ({ setCloseModal }) => {
   const [name, setName] = useState('Jarrell pickeball')
@@ -58,10 +58,7 @@ const CreateGroup = ({ setCloseModal }) => {
     // setMemberLimit(10000)
     // setJoinType('open')
 
-    // redirect
     setCloseModal(true)
-    router.replace('/(dashboard)/Home')
-
     setLoading(false)
   }
 

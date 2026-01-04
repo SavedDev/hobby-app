@@ -10,12 +10,16 @@ const GuestOnly = ({ children }) => {
   const router = useRouter()
 
   useEffect(() => {
-    if (authChecked && user !== null) {
-      router.replace("/(dashboard)/Profile")
+    if (authChecked && user) {
+      if (!user.username) {
+        router.replace("/Username")
+        return
+      }
+      router.replace("/Profile")
     }
   }, [authChecked, user])
 
-  if (!authChecked || user) {
+  if (!authChecked || (user && user.username)) {
     return (
       <ThemedLoader />
     )

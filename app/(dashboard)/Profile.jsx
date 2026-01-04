@@ -6,9 +6,10 @@ import Spacer from '../../components/layout/Spacer'
 import ThemedView from '../../components/layout/ThemedView'
 import ThemedText from '../../components/ui/ThemedText'
 import ThemedButton from '../../components/ui/ThemedButton'
+import { Link } from 'expo-router'
 
 const Profile = () => {
-  const { logout, user } = useUser()
+  const { logout, deleteAccount, user } = useUser()
 
   return (
     <ThemedView style={styles.container}>
@@ -16,11 +17,18 @@ const Profile = () => {
 
       <Spacer height={20} />
 
+      <ThemedText>Username: {user?.username}</ThemedText>
+      <Link href="/Username">
+        <ThemedText>Create Username</ThemedText>
+      </Link>
+
       <ThemedText>Email: {user?.email}</ThemedText>
 
       <Spacer height={20} />
 
       <ThemedButton onPress={logout} title='Logout' />
+      <Spacer height={20} />
+      <ThemedButton onPress={deleteAccount} title='Delete Account' />
     </ThemedView>
   )
 }

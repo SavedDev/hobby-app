@@ -1,26 +1,28 @@
 import { createContext, useEffect, useState } from 'react'
-import { tablesDB, client } from '../lib/appwrite'
+import { tablesDB, client, databaseId, groupTable, userTable } from '../lib/appwrite'
 import { ID, Permission, Query, Role } from 'react-native-appwrite'
 
 import { useUser } from '../hooks/useUser'
 
 export const GroupContext = createContext()
 
-const databaseId = '68ab626a00016c1fae96'
-const tableId = '68ab634f003de5b45029'
-
 export function GroupProvider({ children }) {
   const [groups, setGroups] = useState([])
-  const { user } = useUser()
+  const { user, setUser } = useUser()
 
-  async function fetchGroups() {
+  async function fetchGroups(relations = []) {
     try {
+      let selectFields = ['*']
+
+      relations.forEach(rel => {
+        selectFields.push(`${rel}.*`)
+      })
       const response = await tablesDB.listRows({
         databaseId,
-        tableId,
+        tableId: groupTable,
         queries: [
-          Query.select(['*', 'author.*']),
-          Query.orderDesc('$createdAt'),
+          Query.select(selectFields),
+          Query.orderDesc('$createdAt')
         ],
       })
       setGroups(response.rows)
@@ -33,7 +35,7 @@ export function GroupProvider({ children }) {
     try {
       const response = await tablesDB.getRow({
         databaseId,
-        tableId,
+        tableId: groupTable,
         rowId: groupId
       })
       return response
@@ -47,7 +49,7 @@ export function GroupProvider({ children }) {
     try {
       const newGroup = await tablesDB.createRow({
         databaseId,
-        tableId,
+        tableId: groupTable,
         rowId: ID.unique(),
         data: {
           ...groupData,
@@ -74,11 +76,30 @@ export function GroupProvider({ children }) {
     }
   }
 
+  async function toggleGroupMembership(groupIds) {
+    try {
+      const response = await tablesDB.updateRow({
+        databaseId,
+        tableId: userTable,
+        rowId: user.$id,
+        data: {
+          joinedHobbyGroups: groupIds,
+        },
+      })
+
+      setUser(response)
+      return response
+    } catch (error) {
+      console.error('Failed to toggle group membership:', error.message)
+      return null
+    }
+  }
+
   async function deleteGroup(groupId) {
     try {
       await tablesDB.deleteRow({
         databaseId,
-        tableId,
+        tableId: groupTable,
         rowId: groupId
       })
     } catch (error) {
@@ -87,35 +108,55 @@ export function GroupProvider({ children }) {
   }
 
   useEffect(() => {
-    let unsubscribe
-    const channel = `databases.${databaseId}.tables.${tableId}.rows`
+    let unsubGroup
+    let unsubUser
 
     if (user) {
       fetchGroups()
 
-      unsubscribe = client.subscribe(channel, (res) => {
-        const { payload, events } = res
+      // subscribe to groups
+      unsubGroup = client.subscribe(
+        `databases.${databaseId}.tables.${groupTable}.rows`,
+        (res) => {
+          const { payload, events } = res
 
-        if (events[0].includes('create')) {
-          setGroups((prevGroups) => [payload, ...prevGroups])
-        }
+          if (events[0].includes("create")) {
+            setGroups((prevGroups) => [payload, ...prevGroups])
+          }
 
-        if (events[0].includes('delete')) {
-          setGroups((prevGroups) => prevGroups.filter((group) => group.$id !== payload.$id))
+          if (events[0].includes("delete")) {
+            setGroups((prevGroups) =>
+              prevGroups.filter((group) => group.$id !== payload.$id)
+            )
+          }
         }
-      })
+      )
+
+      // subscribe to this user
+      unsubUser = client.subscribe(
+        `databases.${databaseId}.tables.${userTable}.rows.${user.$id}`,
+        (res) => {
+          const { events } = res
+
+          if (events[0].includes("update")) {
+            // refresh groups when user data changes
+            fetchGroups()
+          }
+        }
+      )
     } else {
       setGroups([])
     }
 
     return () => {
-      if (unsubscribe) unsubscribe()
+      if (unsubGroup) unsubGroup()
+      if (unsubUser) unsubUser()
     }
-
   }, [user])
 
+
   return (
-    <GroupContext.Provider value={{ groups, fetchGroups, fetchGroupById, createNewGroup, updateGroup, deleteGroup }}>
+    <GroupContext.Provider value={{ groups, fetchGroups, fetchGroupById, createNewGroup, updateGroup, toggleGroupMembership, deleteGroup }}>
       {children}
     </GroupContext.Provider>
   )
