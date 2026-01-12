@@ -3,8 +3,6 @@ import { useRouter } from "expo-router"
 
 import { useUser } from "../../hooks/useUser"
 
-import ThemedLoader from "../ui/ThemedLoader"
-
 const GuestOnly = ({ children }) => {
   const { user, authChecked } = useUser()
   const router = useRouter()
@@ -19,11 +17,11 @@ const GuestOnly = ({ children }) => {
     }
   }, [authChecked, user])
 
-  if (!authChecked || (user && user.username)) {
-    return (
-      <ThemedLoader />
-    )
-  }
+  // if (!authChecked || (user && user.username)) {
+  //   return (
+  //     <ThemedLoader />
+  //   )
+  // }
 
   return children
 }

@@ -50,12 +50,12 @@ const DashboardLayout = () => {
           }}
         />
         <Tabs.Screen
-          name='Chat'
+          name='Social'
           options={{
-            title: 'Chat',
+            title: 'Social',
             tabBarIcon: ({ focused }) => (
-              <Ionicons
-                name={focused ? 'chatbubble' : 'chatbubble-outline'}
+              <MaterialCommunityIcons
+                name={focused ? 'map-marker-radius' : 'map-marker-radius-outline'}
                 size={24}
                 color={focused ? theme.iconColorFocused : theme.iconColor}
               />

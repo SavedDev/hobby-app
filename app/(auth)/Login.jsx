@@ -36,6 +36,7 @@ const Login = () => {
         <Spacer height={20} />
 
         <ThemedTextInput
+          width={300}
           title='Email'
           placeholder='Email'
           keyboardType='email-address'
@@ -49,6 +50,7 @@ const Login = () => {
         <Spacer height={10} />
 
         <ThemedTextInput
+          width={300}
           title='Password'
           placeholder='Password'
           secureTextEntry

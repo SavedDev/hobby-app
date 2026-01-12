@@ -31,12 +31,20 @@ export function GroupProvider({ children }) {
     }
   }
 
-  async function fetchGroupById(groupId) {
+  async function fetchGroupById(groupId, relations = []) {
     try {
+      let selectFields = ['*']
+
+      relations.forEach(rel => {
+        selectFields.push(`${rel}.*`)
+      })
       const response = await tablesDB.getRow({
         databaseId,
         tableId: groupTable,
-        rowId: groupId
+        rowId: groupId,
+        queries: [
+          Query.select(selectFields),
+        ]
       })
       return response
     } catch (error) {
@@ -56,7 +64,7 @@ export function GroupProvider({ children }) {
           author: user.$id,
         },
         permissions: [
-          Permission.read(Role.user(user.$id)),
+          Permission.read(Role.any()),
           Permission.update(Role.user(user.$id)),
           Permission.delete(Role.user(user.$id)),
         ]
@@ -76,14 +84,23 @@ export function GroupProvider({ children }) {
     }
   }
 
-  async function toggleGroupMembership(groupIds) {
+  async function toggleGroupMembership(groupId) {
     try {
+      // 1. Get current IDs from the source of truth (the user object)
+      const currentGroupIds = user.joinedHobbyGroups?.map(g => g.$id || g) || []
+
+      const isMember = currentGroupIds.includes(groupId)
+      const updatedGroupIds = isMember
+        ? currentGroupIds.filter(id => id !== groupId) // 2. Remove if exists
+        : [groupId, ...currentGroupIds]                // Add if new
+
+      // 3. Send to Appwrite
       const response = await tablesDB.updateRow({
         databaseId,
         tableId: userTable,
         rowId: user.$id,
         data: {
-          joinedHobbyGroups: groupIds,
+          joinedHobbyGroups: updatedGroupIds,
         },
       })
 
@@ -95,29 +112,28 @@ export function GroupProvider({ children }) {
     }
   }
 
-  async function deleteGroup(groupIdToDelete, updatedUserGroupIds) {
+  async function deleteGroup(groupId) {
     try {
       await tablesDB.deleteRow({
         databaseId,
         tableId: groupTable,
-        rowId: groupIdToDelete
+        rowId: groupId,
       })
+
+      await toggleGroupMembership(groupId)
     } catch (error) {
-      console.error('Failed to delete group:', error)
-    }
-    try {
-      await toggleGroupMembership(updatedUserGroupIds)
-    } catch (error) {
-      console.error('Failed to update user groups:', error)
+      console.error('Failed to delete group flow:', error)
     }
   }
+
 
   useEffect(() => {
     let unsubGroup
     let unsubUser
 
     if (user) {
-      fetchGroups()
+      console.log('fetching groups...')
+      fetchGroups(['author'])
 
       // subscribe to groups
       unsubGroup = client.subscribe(
@@ -141,7 +157,6 @@ export function GroupProvider({ children }) {
                 ),
               }
             })
-            console.log(user.joinedHobbyGroups.length)
           }
         }
       )

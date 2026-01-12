@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 import { useLocalSearchParams, useNavigation } from 'expo-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 
 import { useGroups } from '../../../hooks/useGroups'
 import { useUser } from '../../../hooks/useUser'
@@ -12,71 +12,54 @@ import ThemedButton from '../../../components/ui/ThemedButton'
 import Spacer from '../../../components/layout/Spacer'
 
 const GroupDetails = () => {
-  const [group, setGroup] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [handleMembershipLoading, setHandleMembershipLoading] = useState(false)
-
-  const [existingGroupIds, setExistingGroupIds] = useState([])
-  const [isMember, setIsMember] = useState(false)
-  const [userIsAuthor, setUserIsAuthor] = useState(false)
+  const { id, name } = useLocalSearchParams()
+  const navigation = useNavigation()
 
   const { fetchGroupById, deleteGroup, toggleGroupMembership } = useGroups()
   const { user } = useUser()
 
-  const { id, name } = useLocalSearchParams()
-  const navigation = useNavigation()
+  const [group, setGroup] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [actionLoading, setActionLoading] = useState(false)
 
-  const handleDeleteGroup = async () => {
-    setHandleMembershipLoading(true)
-    await deleteGroup(id, getUpdatedGroupIds())
-    setGroup(null)
-    setHandleMembershipLoading(false)
-    navigation.goBack()
-  }
-
-  const handleJoinGroup = async () => {
-    setHandleMembershipLoading(true)
-    await toggleGroupMembership(getUpdatedGroupIds())
-    setHandleMembershipLoading(false)
-    navigation.goBack()
-  }
-
-  const getUpdatedGroupIds = (groupId = id) => {
-    let updatedGroupIds
-    if (isMember) {
-      // leave group
-      return updatedGroupIds = existingGroupIds.filter(id => id !== groupId)
-    } else {
-      // join group
-      return updatedGroupIds = [groupId, ...existingGroupIds]
-    }
-  }
+  // We calculate these constants every render so they are ALWAYS in sync with 'user' and 'group'
+  const joinedGroupIds = useMemo(() => user?.joinedHobbyGroups?.map(g => g.$id || g) || [], [user])
+  const isMember = joinedGroupIds.includes(id)
+  const isAuthor = group?.author === user?.$id
 
   useEffect(() => {
-    setLoading(true)
-
     async function loadGroup() {
-      const groupData = await fetchGroupById(id)
+      setLoading(true)
+      const groupData = await fetchGroupById(id, ['author'])
       setGroup(groupData)
       setLoading(false)
     }
     loadGroup()
   }, [id])
 
-  useEffect(() => {
-    setExistingGroupIds(user.joinedHobbyGroups?.map(g => g.$id || g) || [])
-    setIsMember(existingGroupIds.includes(id))
-    setUserIsAuthor(group?.author === user.$id)
-
-  }, [group])
-
+  // navigation title
   useEffect(() => {
     if (group?.name) {
-      navigation.setOptions({ title: name })
+      navigation.setOptions({ title: group.name })
     }
-  }, [group, navigation])
+  }, [group])
 
-  if (!group || loading) {
+  const handleToggleMembership = async () => {
+    setActionLoading(true)
+    await toggleGroupMembership(id)
+    setActionLoading(false)
+  }
+
+  const handleDelete = async () => {
+    setActionLoading(true)
+    const updatedIds = joinedGroupIds.filter(groupId => groupId !== id)
+    await deleteGroup(id, updatedIds)
+    setActionLoading(false)
+
+    navigation.goBack()
+  }
+
+  if (loading || !group) {
     return (
       <ThemedView style={styles.container}>
         <ThemedLoader />
@@ -86,20 +69,32 @@ const GroupDetails = () => {
 
   return (
     <ThemedView style={styles.container} safe={false}>
-      <ThemedText title>{group?.name}</ThemedText>
+      <ThemedView style={styles.content}>
+        <ThemedText title>{group.name}</ThemedText>
+        <ThemedText style={styles.subtitle}>{group.description || 'No description provided.'}</ThemedText>
+        <ThemedText style={styles.subtitle}>{group.author?.username + ' created this group'}</ThemedText>
 
-      {userIsAuthor &&
+        <Spacer height={40} />
+
         <ThemedButton
-          onPress={handleDeleteGroup}
-          loading={handleMembershipLoading}
-          title='Delete Group' />
-      }
-      <Spacer />
-      <ThemedButton
-        onPress={handleJoinGroup}
-        title={isMember ? 'Leave Group' : 'Join Group'}
-        loading={handleMembershipLoading}
-      />
+          onPress={handleToggleMembership}
+          title={isMember ? 'Leave Group' : 'Join Group'}
+          loading={actionLoading}
+          variant={isMember ? 'secondary' : 'primary'} // Visual cue for state
+        />
+
+        {isAuthor && (
+          <>
+            <Spacer height={12} />
+            <ThemedButton
+              onPress={handleDelete}
+              loading={actionLoading}
+              title='Delete Group'
+              style={{ backgroundColor: '#FF3B30' }} // Standard destructive red
+            />
+          </>
+        )}
+      </ThemedView>
     </ThemedView>
   )
 }
@@ -109,6 +104,13 @@ export default GroupDetails
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'stretch'
   },
+  content: {
+    padding: 20,
+    alignItems: 'stretch',
+  },
+  subtitle: {
+    opacity: 0.6,
+    marginTop: 8,
+  }
 })

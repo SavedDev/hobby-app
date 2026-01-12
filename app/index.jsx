@@ -1,52 +1,19 @@
-import { Image, StyleSheet } from 'react-native'
-import { Link } from 'expo-router'
-import Icon from "../assets/favicon.png"
+import { Redirect } from 'expo-router'
+import { useUser } from '../hooks/useUser'
+import ThemedLoader from '../components/ui/ThemedLoader'
 
-import Spacer from '../components/layout/Spacer'
-import ThemedView from '../components/layout/ThemedView'
-import ThemedText from '../components/ui/ThemedText'
+const Index = () => {
+  const { user, loading } = useUser()
 
-const Home = () => {
-  return (
-    <ThemedView style={styles.container}>
-      <Image source={Icon} />
+  if (loading) {
+    return <ThemedLoader />
+  }
 
-      <ThemedText title>Get back to your hobbies</ThemedText>
+  if (!user) {
+    return <Redirect href="/(auth)/Login" />
+  }
 
-      <Spacer height={15} />
-
-      <Link href="/Hobbies">
-        <ThemedText>Hobbies</ThemedText>
-      </Link>
-
-      <Spacer height={15} />
-
-      <Link href="/Login">
-        <ThemedText>Login</ThemedText>
-      </Link>
-
-      <Spacer height={15} />
-
-      <Link href="/Profile">
-        <ThemedText>Profile</ThemedText>
-      </Link>
-      <Spacer height={15} />
-      <Link href="/Home">
-        <ThemedText>Feed</ThemedText>
-      </Link>
-    </ThemedView>
-  )
+  return <Redirect href="/(dashboard)/Home" />
 }
 
-export default Home
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    color: '#000'
-  }
-})
+export default Index

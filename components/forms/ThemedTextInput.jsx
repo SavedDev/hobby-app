@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, TextInput, useColorScheme, View } from 'react-native'
+import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useState } from 'react'
 
@@ -6,7 +6,9 @@ import { Colors } from '../../constants/colors'
 import ThemedText from '../ui/ThemedText'
 
 const ThemedTextInput = ({
-  style,
+  inputStyle,
+  inputContainerStyle,
+  width = '100%',
   title,
   secureTextEntry,
   showPasswordEye = true,
@@ -14,6 +16,7 @@ const ThemedTextInput = ({
   iconName = 'search',
   iconSize = 24,
   iconStyle,
+  buttonIcon,
   ...props
 }) => {
   const [passwordHidden, setPasswordHidden] = useState(true)
@@ -26,20 +29,19 @@ const ThemedTextInput = ({
   }
 
   return (
-    <View style={{ width: 300 }}>
+    <View style={{ width }}>
       {title && <ThemedText>{title}</ThemedText>}
-      <View style={[styles.iconContainer, { backgroundColor: theme.uiBackground }]}>
+      <View style={[styles.container, inputContainerStyle]}>
         <TextInput
           style={[
             {
-              width: '100%',
               backgroundColor: theme.uiBackground,
               color: theme.text,
-              borderRadius: 6,
-              padding: 20,
+              paddingLeft: icon ? 42 : 20,
+              marginRight: buttonIcon ? 10 : 0,
             },
-            { paddingLeft: icon ? 42 : 20 },
-            style,
+            styles.input,
+            inputStyle,
           ]}
           secureTextEntry={secureTextEntry && passwordHidden}
           {...props}
@@ -63,6 +65,14 @@ const ThemedTextInput = ({
             />
           </Pressable>
         }
+        {buttonIcon &&
+          <TouchableOpacity
+            style={[styles.button, !props.value && styles.buttonDisabled]}
+            disabled={!props.value}
+          >
+            {buttonIcon}
+          </TouchableOpacity>
+        }
       </View>
     </View>
   )
@@ -71,10 +81,18 @@ const ThemedTextInput = ({
 export default ThemedTextInput
 
 const styles = StyleSheet.create({
-  iconContainer: {
+  container: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: 'transparent',
+  },
+  input: {
+    width: '100%',
+    borderRadius: 6,
+    padding: 20,
+    flex: 1,
+    // TODO: transfer these to the Chat component
   },
   pressable: {
     width: 45,
@@ -88,5 +106,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 10,
     color: "#505050",
+  },
+  button: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  buttonDisabled: {
+    backgroundColor: '#D1D1D6',
   },
 })

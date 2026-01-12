@@ -1,12 +1,14 @@
 import { createContext, useEffect, useState } from 'react'
 import { account, tablesDB, databaseId, userTable } from '../lib/appwrite'
 import { ID, Query } from 'react-native-appwrite'
+import { uploadProfilePhoto } from '../helpers/uploadServices'
 
 export const UserContext = createContext()
 
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null)
   const [authChecked, setAuthChecked] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   async function login(email, password, isRegistering = false) {
     try {
@@ -98,7 +100,37 @@ export function UserProvider({ children }) {
     } catch (error) {
       console.error('Failed to delete user:', error)
     }
+  }
 
+  // Inside your useUser hook/context
+  const updateUserPhoto = async (userId) => {
+    try {
+      // 1. Call the service we just fixed
+      const fileId = await uploadProfilePhoto(userId)
+
+      if (fileId) {
+        // 2. Update the document in Appwrite
+        await tablesDB.updateRow({
+          databaseId: databaseId,
+          tableId: userTable,
+          rowId: userId,
+          data: {
+            profileImage: fileId, // This matches your new String attribute
+          },
+        })
+
+        // 3. Update the global state so Profile.jsx re-renders immediately
+        setUser((prev) => ({
+          ...prev,
+          profileImage: fileId,
+        }))
+
+        return fileId
+      }
+    } catch (error) {
+      console.error("Hook Error:", error)
+      throw error
+    }
   }
 
   useEffect(() => {
@@ -111,6 +143,7 @@ export function UserProvider({ children }) {
         setUser(null)
       } finally {
         setAuthChecked(true)
+        setLoading(false)
       }
     }
 
@@ -118,7 +151,7 @@ export function UserProvider({ children }) {
   }, [])
 
   return (
-    <UserContext.Provider value={{ user, setUser, login, register, updateUser, logout, deleteAccount, authChecked }}>
+    <UserContext.Provider value={{ user, setUser, login, register, updateUser, logout, deleteAccount, authChecked, loading, updateUserPhoto }}>
       {children}
     </UserContext.Provider>
   )
