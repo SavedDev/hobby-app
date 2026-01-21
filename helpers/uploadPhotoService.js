@@ -5,18 +5,6 @@ import { ID, Storage } from 'react-native-appwrite'
 // Initializing Storage
 const storage = new Storage(client)
 
-export const getProfileUrl = (profileImage) => {
-  if (!profileImage) return null
-
-  // Ensure we are using getFileView for the Free Tier
-  try {
-    const result = storage.getFileView(bucketId, profileImage)
-    return result.href
-  } catch (e) {
-    return null
-  }
-}
-
 export const uploadProfilePhoto = async (userId) => {
   try {
     // 1. Permission Check (Crucial for iOS/Android)

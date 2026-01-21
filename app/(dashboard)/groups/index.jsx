@@ -88,10 +88,9 @@ const Groups = () => {
             <ThemedText style={styles.dateText}>Find your next community</ThemedText>
           </View>
           <ThemedModal
-            buttonTitle="+"
+            openEl={<Ionicons style={{ padding: 10 }} name="menu-sharp" size={35} />}
             closeModal={closeModal}
             setCloseModal={setCloseModal}
-            style={styles.plusButton}
           >
             <CreateGroup setCloseModal={setCloseModal} />
           </ThemedModal>
@@ -152,14 +151,6 @@ const styles = StyleSheet.create({
   },
   welcomeText: { fontSize: 32, fontWeight: '800' },
   dateText: { opacity: 0.5, fontSize: 14, fontWeight: '500' },
-  plusButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(0,122,255,0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',

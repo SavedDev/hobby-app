@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from 'react'
 import { account, tablesDB, databaseId, userTable } from '../lib/appwrite'
 import { ID, Query } from 'react-native-appwrite'
-import { uploadProfilePhoto } from '../helpers/uploadServices'
+import { uploadProfilePhoto } from '../helpers/uploadPhotoService'
 
 export const UserContext = createContext()
 

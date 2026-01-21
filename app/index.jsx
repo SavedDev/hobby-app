@@ -13,7 +13,7 @@ const Index = () => {
     return <Redirect href="/(auth)/Login" />
   }
 
-  return <Redirect href="/(dashboard)/Home" />
+  return <Redirect href="/(dashboard)/Profile" />
 }
 
 export default Index

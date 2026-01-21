@@ -1,4 +1,4 @@
-import { Modal, View, useColorScheme, StyleSheet } from 'react-native'
+import { Modal, View, useColorScheme, StyleSheet, TouchableOpacity } from 'react-native'
 import { use, useEffect, useState } from 'react'
 
 import { Colors } from '../../constants/colors'
@@ -6,7 +6,7 @@ import ThemedButton from './ThemedButton'
 import ThemedText from './ThemedText'
 import ThemedView from '../layout/ThemedView'
 
-const ThemedModal = ({ style, buttonTitle, closeModal, setCloseModal, children }) => {
+const ThemedModal = ({ style, openEl, closeModal, setCloseModal, children }) => {
   const [openModal, setOpenModal] = useState(false)
 
   const colorScheme = useColorScheme()
@@ -32,11 +32,13 @@ const ThemedModal = ({ style, buttonTitle, closeModal, setCloseModal, children }
 
   return (
     <>
-      <ThemedButton
-        title={buttonTitle || 'Open Modal'}
+      <TouchableOpacity
+        // title={openEl || 'Open Modal'}
         onPress={handleOpenModal}
         textStyle={{ color: '#fff' }}
-      />
+      >
+        {openEl || <ThemedText>Open Modal</ThemedText>}
+      </TouchableOpacity>
 
       <Modal
         visible={openModal}

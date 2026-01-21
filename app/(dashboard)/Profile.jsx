@@ -1,25 +1,26 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { StyleSheet, View, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { useUser } from '../../hooks/useUser'
 import { Link } from 'expo-router'
+import { viewUserProfileUrl } from '../../helpers/previewFileURL'
 
 import Spacer from '../../components/layout/Spacer'
 import ThemedView from '../../components/layout/ThemedView'
 import ThemedText from '../../components/ui/ThemedText'
 import ThemedButton from '../../components/ui/ThemedButton'
-import { getProfileUrl } from '../../helpers/uploadServices'
+import { Ionicons } from '@expo/vector-icons'
+import ThemedModal from '../../components/ui/ThemedModal'
 
 const Profile = () => {
   const { logout, deleteAccount, user, updateUserPhoto } = useUser()
   const [loading, setLoading] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const myGroups = user?.joinedHobbyGroups || []
 
-  // --- Handle Photo Upload ---
   const handleUpdatePhoto = async () => {
     try {
       setLoading(true)
-      // Ensure your useUser hook awaits the database update and calls setUser
       await updateUserPhoto(user?.$id)
     } catch (error) {
       console.error('Failed to update photo:', error)
@@ -28,13 +29,29 @@ const Profile = () => {
     }
   }
 
-  // Generate the URL or null
-  const profileUri = user?.profileImage ? getProfileUrl(user.profileImage) : null
+  const profileUri = viewUserProfileUrl(user?.profileImage)
 
   return (
     <ThemedView safe style={styles.container}>
-      {/* --- Header Section --- */}
       <View style={styles.header}>
+        <ThemedModal
+          openEl={<Ionicons style={{ padding: 10 }} name="menu-sharp" size={35} />}
+          menuOpen={menuOpen}
+          setCloseModal={setMenuOpen}
+        >
+          {/* --- Menu options --- */}
+          <View style={styles.menuContainer}>
+            <ThemedButton onPress={logout} title='Logout' variant="secondary" />
+            <Spacer height={20} />
+            <TouchableOpacity onPress={deleteAccount} activeOpacity={0.7}>
+              <ThemedText style={styles.deleteText}>Delete Account</ThemedText>
+            </TouchableOpacity>
+          </View>
+        </ThemedModal>
+      </View>
+
+      {/* --- Profile Section --- */}
+      <View style={styles.profile}>
         <View style={styles.avatarContainer}>
           <View style={styles.avatarPlaceholder}>
             {profileUri ? (
@@ -95,15 +112,6 @@ const Profile = () => {
       </View>
 
       <Spacer height={40} />
-
-      {/* --- Actions --- */}
-      <View style={styles.actionContainer}>
-        <ThemedButton onPress={logout} title='Logout' variant="secondary" />
-        <Spacer height={20} />
-        <TouchableOpacity onPress={deleteAccount} activeOpacity={0.7}>
-          <ThemedText style={styles.deleteText}>Delete Account</ThemedText>
-        </TouchableOpacity>
-      </View>
     </ThemedView>
   )
 }
@@ -116,8 +124,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   header: {
+    flexDirection: 'row', // removes full width
+    // top: 8,
+    // backgroundColor: 'red'
+  },
+  profile: {
     alignItems: 'center',
-    marginTop: 30,
+    marginTop: 10
+    // backgroundColor: 'blue'
   },
   avatarContainer: {
     position: 'relative',
@@ -214,8 +228,8 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     marginTop: 2
   },
-  actionContainer: {
-    width: '100%',
+  menuContainer: {
+    // width: '100%',
     marginTop: 'auto',
     marginBottom: 40,
   },
