@@ -1,9 +1,11 @@
-import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native'
+import { Pressable, StyleSheet, TextInput, useColorScheme, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useState } from 'react'
 
 import { Colors } from '../../constants/colors'
 import ThemedText from '../ui/ThemedText'
+import Spacer from '../layout/Spacer'
+import CustomTouchableOpacity from '../ui/CustomTouchableOpacity'
 
 const ThemedTextInput = ({
   inputStyle,
@@ -31,6 +33,7 @@ const ThemedTextInput = ({
   return (
     <View style={{ width }}>
       {title && <ThemedText>{title}</ThemedText>}
+      <Spacer />
       <View style={[styles.container, inputContainerStyle]}>
         <TextInput
           style={[
@@ -43,6 +46,7 @@ const ThemedTextInput = ({
             styles.input,
             inputStyle,
           ]}
+          placeholderTextColor='#9591a5'
           secureTextEntry={secureTextEntry && passwordHidden}
           {...props}
         />
@@ -66,12 +70,12 @@ const ThemedTextInput = ({
           </Pressable>
         }
         {buttonIcon &&
-          <TouchableOpacity
+          <CustomTouchableOpacity
             style={[styles.button, !props.value && styles.buttonDisabled]}
             disabled={!props.value}
           >
             {buttonIcon}
-          </TouchableOpacity>
+          </CustomTouchableOpacity>
         }
       </View>
     </View>
@@ -88,10 +92,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   input: {
+    flex: 1,
     width: '100%',
     borderRadius: 6,
-    padding: 20,
-    flex: 1,
+    padding: 15,
     // TODO: transfer these to the Chat component
   },
   pressable: {

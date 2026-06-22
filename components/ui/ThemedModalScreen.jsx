@@ -1,12 +1,13 @@
-import { Modal, View, useColorScheme, StyleSheet, TouchableOpacity } from 'react-native'
+import { Modal, View, useColorScheme, StyleSheet } from 'react-native'
 import { use, useEffect, useState } from 'react'
 
 import { Colors } from '../../constants/colors'
 import ThemedButton from './ThemedButton'
 import ThemedText from './ThemedText'
 import ThemedView from '../layout/ThemedView'
+import CustomTouchableOpacity from './CustomTouchableOpacity'
 
-const ThemedModal = ({ style, openEl, closeModal, setCloseModal, children }) => {
+const ThemedModalScreen = ({ style, openEl, closeModal, setCloseModal, children }) => {
   const [openModal, setOpenModal] = useState(false)
 
   const colorScheme = useColorScheme()
@@ -32,13 +33,12 @@ const ThemedModal = ({ style, openEl, closeModal, setCloseModal, children }) => 
 
   return (
     <>
-      <TouchableOpacity
-        // title={openEl || 'Open Modal'}
+      <CustomTouchableOpacity
         onPress={handleOpenModal}
         textStyle={{ color: '#fff' }}
       >
         {openEl || <ThemedText>Open Modal</ThemedText>}
-      </TouchableOpacity>
+      </CustomTouchableOpacity>
 
       <Modal
         visible={openModal}
@@ -55,7 +55,7 @@ const ThemedModal = ({ style, openEl, closeModal, setCloseModal, children }) => 
   )
 }
 
-export default ThemedModal
+export default ThemedModalScreen
 
 const styles = StyleSheet.create({
   container: {

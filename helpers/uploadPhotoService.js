@@ -1,11 +1,8 @@
 import * as ImagePicker from 'expo-image-picker'
-import { bucketId, client } from '../lib/appwrite'
-import { ID, Storage } from 'react-native-appwrite'
+import { ID } from 'react-native-appwrite'
+import { imageBuckets, storage } from '../lib/appwrite'
 
-// Initializing Storage
-const storage = new Storage(client)
-
-export const uploadProfilePhoto = async (userId) => {
+export const uploadImage = async (userId, aspectRatio = [1, 1], bucketType = 'profileBucket') => {
   try {
     // 1. Permission Check (Crucial for iOS/Android)
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -19,7 +16,7 @@ export const uploadProfilePhoto = async (userId) => {
       // Use an array of strings for modern Expo versions
       mediaTypes: ['images'],
       allowsEditing: true,
-      aspect: [1, 1],
+      aspect: aspectRatio,
       quality: 0.2,
     })
     if (result.canceled || !result.assets) return null
@@ -36,7 +33,7 @@ export const uploadProfilePhoto = async (userId) => {
 
     // 3. Upload to Appwrite
     const uploadedFile = await storage.createFile(
-      bucketId,
+      imageBuckets[bucketType],
       ID.unique(),
       file
     )

@@ -3,13 +3,14 @@ import { StyleSheet, View, Image, TouchableOpacity, ActivityIndicator } from 're
 import { useUser } from '../../hooks/useUser'
 import { Link } from 'expo-router'
 import { viewUserProfileUrl } from '../../helpers/previewFileURL'
+import { Ionicons } from '@expo/vector-icons'
 
 import Spacer from '../../components/layout/Spacer'
 import ThemedView from '../../components/layout/ThemedView'
 import ThemedText from '../../components/ui/ThemedText'
 import ThemedButton from '../../components/ui/ThemedButton'
-import { Ionicons } from '@expo/vector-icons'
-import ThemedModal from '../../components/ui/ThemedModal'
+import ThemedModalScreen from '../../components/ui/ThemedModalScreen'
+import CustomTouchableOpacity from '../../components/ui/CustomTouchableOpacity'
 
 const Profile = () => {
   const { logout, deleteAccount, user, updateUserPhoto } = useUser()
@@ -34,8 +35,9 @@ const Profile = () => {
   return (
     <ThemedView safe style={styles.container}>
       <View style={styles.header}>
-        <ThemedModal
-          openEl={<Ionicons style={{ padding: 10 }} name="menu-sharp" size={35} />}
+        {/* menu */}
+        <ThemedModalScreen
+          openEl={<Ionicons style={{ top: 10 }} name="menu-sharp" size={35} />}
           menuOpen={menuOpen}
           setCloseModal={setMenuOpen}
         >
@@ -43,15 +45,16 @@ const Profile = () => {
           <View style={styles.menuContainer}>
             <ThemedButton onPress={logout} title='Logout' variant="secondary" />
             <Spacer height={20} />
-            <TouchableOpacity onPress={deleteAccount} activeOpacity={0.7}>
+            <CustomTouchableOpacity onPress={deleteAccount}>
               <ThemedText style={styles.deleteText}>Delete Account</ThemedText>
-            </TouchableOpacity>
+            </CustomTouchableOpacity>
           </View>
-        </ThemedModal>
+        </ThemedModalScreen>
       </View>
 
       {/* --- Profile Section --- */}
       <View style={styles.profile}>
+        {/* avatar */}
         <View style={styles.avatarContainer}>
           <View style={styles.avatarPlaceholder}>
             {profileUri ? (
@@ -73,13 +76,13 @@ const Profile = () => {
             )}
           </View>
 
-          <TouchableOpacity
+          <CustomTouchableOpacity
             style={styles.editBadge}
             onPress={handleUpdatePhoto}
             disabled={loading}
           >
             <ThemedText style={styles.editIcon}>{loading ? '...' : '✎'}</ThemedText>
-          </TouchableOpacity>
+          </CustomTouchableOpacity>
         </View>
 
         <Spacer height={15} />
@@ -88,6 +91,20 @@ const Profile = () => {
           {user?.username || 'New Hobbyist'}
         </ThemedText>
         <ThemedText style={styles.emailText}>{user?.email}</ThemedText>
+
+        <Spacer height={20} />
+
+        <ThemedText title>
+          Interests:
+        </ThemedText>
+
+        <View style={styles.interestsContainer}>
+          {user?.interests?.map((interest, index) => (
+            <ThemedText key={index} style={styles.interestText}>
+              {interest}
+            </ThemedText>
+          ))}
+        </View>
 
         {!user?.username && (
           <Link href="/Username" style={{ marginTop: 12 }}>

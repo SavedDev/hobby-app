@@ -1,7 +1,7 @@
-import { FlatList, Pressable, StyleSheet, View, Dimensions } from 'react-native'
-import { useState, useCallback, useMemo } from 'react'
+import { FlatList, Pressable, StyleSheet, View, Dimensions, TouchableOpacity } from 'react-native'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
+import { Ionicons, MaterialIcons } from '@expo/vector-icons'
 
 import { useGroups } from '../../../hooks/useGroups'
 import { useUser } from '../../../hooks/useUser'
@@ -11,8 +11,9 @@ import Spacer from '../../../components/layout/Spacer'
 import ThemedView from '../../../components/layout/ThemedView'
 import ThemedText from '../../../components/ui/ThemedText'
 import ThemedCard from '../../../components/ui/ThemedCard'
-import ThemedModal from '../../../components/ui/ThemedModal'
+import ThemedModalScreen from '../../../components/ui/ThemedModalScreen'
 import ThemedTextInput from '../../../components/forms/ThemedTextInput'
+import CustomTouchableOpacity from '../../../components/ui/CustomTouchableOpacity'
 
 const { width } = Dimensions.get('window')
 const COLUMN_WIDTH = (width - 52) / 2 // Accounts for gap and padding
@@ -79,7 +80,7 @@ const Groups = () => {
   ), [router])
 
   return (
-    <ThemedView safe style={styles.container}>
+    <ThemedView safe noBottomPadding style={styles.container}>
       {/* Top Navigation & Search */}
       <View style={styles.topBar}>
         <View style={styles.header}>
@@ -87,13 +88,16 @@ const Groups = () => {
             <ThemedText title style={styles.welcomeText}>Explore</ThemedText>
             <ThemedText style={styles.dateText}>Find your next community</ThemedText>
           </View>
-          <ThemedModal
-            openEl={<Ionicons style={{ padding: 10 }} name="menu-sharp" size={35} />}
+          {/* <ThemedModalScreen
+            openEl={<MaterialIcons name="group-add" size={30} />}
             closeModal={closeModal}
             setCloseModal={setCloseModal}
-          >
-            <CreateGroup setCloseModal={setCloseModal} />
-          </ThemedModal>
+          > */}
+          {/* <CreateGroup setCloseModal={setCloseModal} /> */}
+          {/* </ThemedModalScreen> */}
+          <CustomTouchableOpacity onPress={() => router.push('/groups/CreateGroup')} >
+            <Ionicons name="add-circle-outline" size={30} />
+          </CustomTouchableOpacity>
         </View>
         <Spacer height={15} />
         <ThemedTextInput

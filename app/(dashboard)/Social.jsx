@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, FlatList, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, FlatList } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import { useUser } from '../../hooks/useUser'
@@ -8,7 +8,7 @@ import ThemedView from '../../components/layout/ThemedView'
 import ThemedText from '../../components/ui/ThemedText'
 import ThemedCard from '../../components/ui/ThemedCard'
 import Spacer from '../../components/layout/Spacer'
-import ThemedTextInput from '../../components/forms/ThemedTextInput'
+import CustomTouchableOpacity from '../../components/ui/CustomTouchableOpacity'
 
 // Mock Data
 const NEARBY_USERS = [
@@ -32,7 +32,7 @@ const Social = () => {
 
   // --- Sub-render: Horizontal DM Bubble ---
   const renderDMBubble = ({ item }) => (
-    <TouchableOpacity
+    <CustomTouchableOpacity
       style={styles.dmBubbleContainer}
       onPress={() => router.push('/Chat')}
     >
@@ -41,12 +41,12 @@ const Social = () => {
         {item.unread && <View style={styles.unreadPing} />}
       </View>
       <ThemedText numberOfLines={1} style={styles.dmBubbleName}>{item.name}</ThemedText>
-    </TouchableOpacity>
+    </CustomTouchableOpacity>
   )
 
   // --- Sub-render: Vertical Nearby Row ---
   const renderNearbyRow = ({ item }) => (
-    <TouchableOpacity style={styles.nearbyRowCard}>
+    <CustomTouchableOpacity style={styles.nearbyRowCard}>
       <View style={styles.avatarPlaceholder}>
         <ThemedText style={styles.avatarLetter}>{item.name.charAt(0)}</ThemedText>
         <View style={styles.onlineBadge} />
@@ -58,7 +58,7 @@ const Social = () => {
       <View style={styles.distanceTag}>
         <ThemedText style={styles.distanceText}>{item.distance}</ThemedText>
       </View>
-    </TouchableOpacity>
+    </CustomTouchableOpacity>
   )
 
   // --- List Header Component (DMs + Nearby Title) ---
@@ -111,7 +111,7 @@ const Social = () => {
       <View style={styles.stickyHeader}>
         <View style={styles.header}>
           <ThemedText title style={styles.headerTitle}>Social</ThemedText>
-          <TouchableOpacity
+          <CustomTouchableOpacity
             style={styles.dmIconButton}
             onPress={() => router.push('/Chat')}
           >
@@ -119,7 +119,7 @@ const Social = () => {
             <View style={styles.badgeCount}>
               <ThemedText style={styles.badgeText}>39</ThemedText>
             </View>
-          </TouchableOpacity>
+          </CustomTouchableOpacity>
         </View>
         {/* Why have a search bar in social? */}
         {/* <ThemedTextInput

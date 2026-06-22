@@ -1,17 +1,28 @@
-import { Pressable, StyleSheet } from 'react-native'
+import { Pressable, StyleSheet, TouchableOpacity } from 'react-native'
 
 import { Colors } from '../../constants/colors'
 import ThemedText from './ThemedText'
+import CustomTouchableOpacity from './CustomTouchableOpacity'
 
-const ThemedButton = ({ style, title, textStyle, loading = false, ...props }) => {
+const ThemedButton = ({ style, title, textStyle, loading = false, disabled, ...props }) => {
+  // Combine both states into one check
+  const isInactive = loading || disabled
+
   return (
-    <Pressable
-      style={({ pressed }) => [styles.button, pressed || loading && styles.buttonPressed, style]}
-      disabled={loading}
+    <CustomTouchableOpacity
+      // Fix: Use the ternary operator to apply the style object correctly
+      style={[
+        styles.button,
+        isInactive ? styles.disabled : null,
+        style
+      ]}
+      disabled={isInactive}
       {...props}
     >
-      <ThemedText style={[styles.text, textStyle]}>{loading ? 'Loading...' : title}</ThemedText>
-    </Pressable>
+      <ThemedText style={[styles.text, textStyle]}>
+        {loading ? 'Loading...' : title}
+      </ThemedText>
+    </CustomTouchableOpacity>
   )
 }
 
@@ -23,8 +34,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     borderRadius: 5,
   },
-  buttonPressed: {
-    opacity: 0.7,
+  disabled: {
+    opacity: 0.4,
   },
   text: {
     textAlign: 'center',

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { StyleSheet, View, FlatList, TouchableOpacity, ScrollView, TextInput } from 'react-native'
+import { StyleSheet, View, FlatList, TouchableOpacity, ScrollView } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import { useGroups } from '../../hooks/useGroups'
@@ -10,6 +10,7 @@ import ThemedText from '../../components/ui/ThemedText'
 import ThemedCard from '../../components/ui/ThemedCard'
 import Spacer from '../../components/layout/Spacer'
 import ThemedTextInput from '../../components/forms/ThemedTextInput'
+import CustomTouchableOpacity from '../../components/ui/CustomTouchableOpacity'
 
 const Home = () => {
   const { groups } = useGroups()
@@ -44,7 +45,7 @@ const Home = () => {
   )
 
   return (
-    <ThemedView safe style={styles.container}>
+    <ThemedView safe noBottomPadding style={styles.container}>
       {/* --- Fixed Header --- */}
       <View style={styles.headerContainer}>
         <View style={styles.headerTop}>
@@ -52,12 +53,12 @@ const Home = () => {
             <ThemedText style={styles.greeting}>Hello, {user?.username || 'Hobbyist'}</ThemedText>
             <ThemedText title style={styles.title}>Your Dashboard</ThemedText>
           </View>
-          <TouchableOpacity
+          <CustomTouchableOpacity
             style={styles.profileButton}
             onPress={() => router.push('/(dashboard)/Profile')}
           >
             <Ionicons name="person-circle-outline" size={32} color="#007AFF" />
-          </TouchableOpacity>
+          </CustomTouchableOpacity>
         </View>
 
         <Spacer height={15} />
@@ -108,7 +109,7 @@ const Home = () => {
             </ThemedText>
           }
           renderItem={({ item }) => (
-            <TouchableOpacity
+            <CustomTouchableOpacity
               onPress={() => router.push(`/groups/${item.$id}`)}
               style={styles.shortcut}
             >
@@ -116,7 +117,7 @@ const Home = () => {
                 <ThemedText style={styles.shortcutLetter}>{item.name.charAt(0)}</ThemedText>
               </View>
               <ThemedText numberOfLines={1} style={styles.shortcutText}>{item.name}</ThemedText>
-            </TouchableOpacity>
+            </CustomTouchableOpacity>
           )}
         />
 

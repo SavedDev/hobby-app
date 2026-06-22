@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from 'react'
 import { account, tablesDB, databaseId, userTable } from '../lib/appwrite'
 import { ID, Query } from 'react-native-appwrite'
-import { uploadProfilePhoto } from '../helpers/uploadPhotoService'
+import { uploadImage } from '../helpers/uploadPhotoService'
 
 export const UserContext = createContext()
 
@@ -106,7 +106,7 @@ export function UserProvider({ children }) {
   const updateUserPhoto = async (userId) => {
     try {
       // 1. Call the service we just fixed
-      const fileId = await uploadProfilePhoto(userId)
+      const fileId = await uploadImage(userId)
 
       if (fileId) {
         // 2. Update the document in Appwrite

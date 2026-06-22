@@ -1,15 +1,11 @@
-import { bucketId, client } from '../lib/appwrite'
-import { Storage } from 'react-native-appwrite'
+import { imageBuckets, storage } from '../lib/appwrite'
 
-// Initializing Storage
-const storage = new Storage(client)
-
-export const viewUserProfileUrl = (profileImage) => {
+export const viewUserProfileUrl = (profileImage, bucketType = 'profileBucket') => {
   if (!profileImage) return null
 
   // Ensure we are using getFileView for the Free Tier
   try {
-    return storage.getFileViewURL(bucketId, profileImage).href
+    return storage.getFileViewURL(imageBuckets[bucketType], profileImage).href
   } catch (e) {
     return null
   }

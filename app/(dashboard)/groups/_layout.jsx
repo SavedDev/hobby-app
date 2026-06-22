@@ -13,8 +13,19 @@ export default function GroupsLayout() {
         headerTintColor: theme.title,
       }}
     >
+      {/* Main List */}
       <Stack.Screen name="index" options={{ title: 'Groups', headerShown: false }} />
-      <Stack.Screen name="[id]" options={{ title: 'Group' }} />
+
+      {/* Create Modal */}
+      <Stack.Screen name="CreateGroup" options={{ title: 'Create', headerShown: false, presentation: 'modal', gestureEnabled: false }} />
+
+      {/* Dynamic Folder Routes */}
+
+      {/* Note: Group details page */}
+      <Stack.Screen name="[groupId]/index" options={{ title: 'Group Details', headerShown: false }} />
+
+      {/* Note: Edit group page */}
+      <Stack.Screen name="[groupId]/edit" options={{ title: 'Edit Group', headerShown: false, presentation: 'modal', gestureEnabled: false }} />
     </Stack>
   )
 }

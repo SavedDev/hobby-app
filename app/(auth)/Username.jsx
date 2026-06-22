@@ -3,6 +3,7 @@ import { useContext, useState } from 'react'
 import { router } from 'expo-router'
 
 import { UserContext } from '../../contexts/UserContext'
+import { useUser } from '../../hooks/useUser'
 import { Colors } from '../../constants/colors'
 
 import Spacer from '../../components/layout/Spacer'
@@ -12,6 +13,8 @@ import ThemedButton from '../../components/ui/ThemedButton'
 import ThemedTextInput from '../../components/forms/ThemedTextInput'
 
 const Username = () => {
+  const { logout } = useUser()
+
   const [username, setUsername] = useState(null)
   const [error, setError] = useState(null)
 
@@ -21,7 +24,7 @@ const Username = () => {
     setError(null)
     try {
       await updateUser({ username })
-      router.replace('/(dashboard)/Profile')
+      router.replace('/Interests')
     } catch (error) {
       setError(error.message)
       console.log(error.message)
@@ -50,6 +53,10 @@ const Username = () => {
         <Spacer height={20} />
 
         <ThemedButton onPress={handleSubmit} title='Next' />
+
+        <Spacer height={20} />
+
+        <ThemedButton onPress={logout} title='Logout' variant="secondary" />
       </ThemedView>
     </TouchableWithoutFeedback>
   )

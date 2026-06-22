@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from 'react'
-import { tablesDB, client, databaseId, groupTable, userTable } from '../lib/appwrite'
-import { ID, Permission, Query, Role } from 'react-native-appwrite'
+import { tablesDB, client, databaseId, groupTable, userTable, imageBuckets, storage } from '../lib/appwrite'
+import { ID, Permission, Query, Role, Storage } from 'react-native-appwrite'
 
 import { useUser } from '../hooks/useUser'
 
@@ -69,6 +69,8 @@ export function GroupProvider({ children }) {
           Permission.delete(Role.user(user.$id)),
         ]
       })
+
+      return newGroup
     } catch (error) {
       console.error('Failed to create group:', error)
     }
@@ -76,10 +78,21 @@ export function GroupProvider({ children }) {
 
   async function updateGroup(groupId, groupData) {
     try {
-      const updatedGroup = null
+      const updatedGroup = await tablesDB.updateRow({
+        databaseId,
+        tableId: groupTable,
+        rowId: groupId,
+        data: groupData, // Appwrite merges this with existing data
+      })
+
+      // Update local state so the UI reflects changes immediately
+      setGroups((prevGroups) =>
+        prevGroups.map((g) => (g.$id === groupId ? updatedGroup : g))
+      )
+
       return updatedGroup
     } catch (error) {
-      console.error('Failed to update group:', error)
+      console.error('Failed to update group:', error.message)
       return null
     }
   }
@@ -112,7 +125,7 @@ export function GroupProvider({ children }) {
     }
   }
 
-  async function deleteGroup(groupId) {
+  async function deleteGroup(groupId, imageId) {
     try {
       await tablesDB.deleteRow({
         databaseId,
@@ -120,12 +133,18 @@ export function GroupProvider({ children }) {
         rowId: groupId,
       })
 
+      if (imageId) {
+        await storage.deleteFile({
+          bucketId: imageBuckets.profileBucket, // only using 1 bucket for now
+          fileId: imageId,
+        })
+      }
+
       await toggleGroupMembership(groupId)
     } catch (error) {
       console.error('Failed to delete group flow:', error)
     }
   }
-
 
   useEffect(() => {
     let unsubGroup

@@ -24,7 +24,7 @@ const RootLayout = () => {
         >
           <Stack.Screen name='index' options={{ headerShown: false }} />
           <Stack.Screen name='(auth)' options={{ headerShown: false }} />
-          <Stack.Screen name='(dashboard)' options={{ headerShown: false }} />
+          <Stack.Screen name='(dashboard)' options={{ headerShown: false, animation: 'none' }} />
 
           {/* Optional: Add a screen for 404/not found if you have a +not-found.js */}
         </Stack>

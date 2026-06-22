@@ -10,11 +10,14 @@ import ThemedText from '../../components/ui/ThemedText'
 import ThemedButton from '../../components/ui/ThemedButton'
 import ThemedTextInput from '../../components/forms/ThemedTextInput'
 import ThemedView from '../../components/layout/ThemedView'
+import { useUser } from '../../hooks/useUser'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
+  const { user } = useUser()
+  console.log(user)
 
   const { login } = useContext(UserContext)
 

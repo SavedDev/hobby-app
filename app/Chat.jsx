@@ -3,14 +3,13 @@ import {
   StyleSheet,
   FlatList,
   View,
-  KeyboardAvoidingView,
-  Platform
 } from 'react-native'
 import { useUser } from '../hooks/useUser'
 
 import ThemedView from '../components/layout/ThemedView'
 import ThemedText from '../components/ui/ThemedText'
 import ThemedTextInput from '../components/forms/ThemedTextInput'
+import CustomKeyboardAvoidingView from '../components/layout/CustomKeyboardAvoidingView'
 
 // Mock data for UI design - Replace with Appwrite Realtime later
 const MOCK_MESSAGES = [
@@ -50,10 +49,7 @@ const Chat = () => {
       />
 
       {/* Input Area */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={20} // Adjust based on your tab bar height
-      >
+      <CustomKeyboardAvoidingView>
         <ThemedTextInput
           inputContainerStyle={styles.containerStyle}
           inputStyle={styles.inputStyle}
@@ -63,7 +59,7 @@ const Chat = () => {
           multiline
           buttonIcon={<ThemedText style={styles.sendButtonText}>↑</ThemedText>}
         />
-      </KeyboardAvoidingView>
+      </CustomKeyboardAvoidingView>
     </ThemedView>
   )
 }
