@@ -5,34 +5,37 @@ import {
   ScrollView,
   Dimensions,
   LayoutAnimation,
+  useColorScheme,
 } from 'react-native'
 import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
-import { POPULAR_CATEGORIES } from '../../../constants/categories'
+import { POPULAR_CATEGORIES } from '../../constants/categories'
+import { Colors } from '../../constants/colors'
 
-import ThemedView from '../../../components/layout/ThemedView'
-import ThemedText from '../../../components/ui/ThemedText'
-import ThemedButton from '../../../components/ui/ThemedButton'
-import CustomTouchableOpacity from '../../../components/ui/CustomTouchableOpacity'
-import Spacer from '../../../components/layout/Spacer'
+import ThemedView from '../../components/layout/ThemedView'
+import ThemedText from '../../components/ui/ThemedText'
+import ThemedButton from '../../components/ui/ThemedButton'
+import CustomTouchableOpacity from '../../components/ui/CustomTouchableOpacity'
+import Spacer from '../../components/layout/Spacer'
 
 const { width } = Dimensions.get('window')
 const COLUMN_WIDTH = (width - 60) / 2 // 2 columns with padding
 
 const Interests = () => {
+  const colorScheme = useColorScheme()
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const [selectedIds, setSelectedIds] = useState([])
 
   const toggleInterest = (id) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
-    if (selectedIds.includes(id)) {
-      setSelectedIds(selectedIds.filter((i) => i !== id))
-    } else {
-      setSelectedIds([...selectedIds, id])
-    }
+    setSelectedIds((current) =>
+      current.includes(id) ? current.filter((i) => i !== id) : [...current, id]
+    )
   }
 
   const handleContinue = () => {
-    // Save interests to user profile logic here
+    // TODO: persist selected interests to the user profile
     router.replace('/(dashboard)/Profile')
   }
 
@@ -41,9 +44,8 @@ const Interests = () => {
 
   return (
     <ThemedView safe style={styles.container}>
-      {/* HEADER */}
       <View style={styles.header}>
-        <View style={styles.progressTrack}>
+        <View style={[styles.progressTrack, { backgroundColor: theme.navBackground }]}>
           <View
             style={[
               styles.progressBar,
@@ -51,7 +53,7 @@ const Interests = () => {
             ]}
           />
         </View>
-        <CustomTouchableOpacity onPress={() => router.replace('/home')}>
+        <CustomTouchableOpacity onPress={() => router.replace('/(dashboard)/Home')}>
           <ThemedText style={styles.skipBtn}>Skip</ThemedText>
         </CustomTouchableOpacity>
       </View>
@@ -73,9 +75,9 @@ const Interests = () => {
               <CustomTouchableOpacity
                 key={item.id}
                 onPress={() => toggleInterest(item.id)}
-                activeOpacity={0.7}
                 style={[
                   styles.interestCard,
+                  { backgroundColor: theme.uiBackground },
                   isSelected && styles.interestCardActive
                 ]}
               >
@@ -95,13 +97,11 @@ const Interests = () => {
         <Spacer height={100} />
       </ScrollView>
 
-      {/* FOOTER ACTION */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, { backgroundColor: theme.background }]}>
         <ThemedButton
           title={isReady ? "Let's Go!" : `Pick ${3 - selectionCount} more`}
           onPress={handleContinue}
           disabled={!isReady}
-          style={isReady ? styles.buttonActive : styles.buttonDisabled}
         />
       </View>
     </ThemedView>
@@ -119,7 +119,6 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 6,
-    backgroundColor: 'rgba(0,0,0,0.05)',
     borderRadius: 3,
     flex: 1,
     marginRight: 20,
@@ -127,7 +126,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#007AFF',
+    backgroundColor: Colors.primary,
   },
   skipBtn: {
     opacity: 0.5,
@@ -137,7 +136,7 @@ const styles = StyleSheet.create({
   emojiTitle: { fontSize: 40, marginBottom: 10 },
   mainTitle: { fontSize: 32, fontWeight: '800', lineHeight: 38 },
   subtitle: { fontSize: 16, opacity: 0.6, marginTop: 10, lineHeight: 22 },
-  highlight: { color: '#007AFF', fontWeight: '700' },
+  highlight: { color: Colors.primary, fontWeight: '700' },
 
   grid: {
     flexDirection: 'row',
@@ -147,7 +146,6 @@ const styles = StyleSheet.create({
   interestCard: {
     width: COLUMN_WIDTH,
     height: 110,
-    backgroundColor: 'rgba(0,0,0,0.03)',
     borderRadius: 20,
     padding: 15,
     marginBottom: 15,
@@ -156,8 +154,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   interestCardActive: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
     transform: [{ scale: 0.98 }],
   },
   cardHeader: {
@@ -166,7 +164,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   icon: { fontSize: 30 },
-  label: { fontSize: 16, fontWeight: '700', color: '#000' },
+  label: { fontSize: 16, fontWeight: '700' },
   labelActive: { color: '#FFF' },
 
   footer: {
@@ -175,10 +173,7 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 25,
     paddingBottom: 40,
-    backgroundColor: 'rgba(255,255,255,0.9)',
   },
-  buttonActive: { backgroundColor: '#007AFF' },
-  buttonDisabled: { backgroundColor: '#E5E5EA' }
 })
 
 export default Interests

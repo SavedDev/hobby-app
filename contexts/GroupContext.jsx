@@ -200,7 +200,7 @@ export function GroupProvider({ children }) {
       if (unsubGroup) unsubGroup()
       if (unsubUser) unsubUser()
     }
-  }, [user])
+  }, [user?.$id])
 
   return (
     <GroupContext.Provider value={{ groups, fetchGroups, fetchGroupById, createNewGroup, updateGroup, toggleGroupMembership, deleteGroup }}>
